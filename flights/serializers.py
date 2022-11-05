@@ -2,13 +2,14 @@ from rest_framework import serializers
 
 from .models import Booking, Flight
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.tokens import RefreshToken
 
 User = get_user_model()
 
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
-    
+    token = serializers.CharField(read_only=True, allow_blank = True)
     def validate(self, data):
         my_username = data.get("username")
         my_password = data.get("password")
@@ -21,6 +22,10 @@ class UserLoginSerializer(serializers.Serializer):
         if not user_obj.check_password(my_password):
             raise serializers.ValidationError("Incorrect username/password combination!")
 
+        payload = RefreshToken.for_user(user_obj)
+        token = str(payload.access_token)
+
+        data["token"] = token
         return data
 
 class FlightSerializer(serializers.ModelSerializer):
