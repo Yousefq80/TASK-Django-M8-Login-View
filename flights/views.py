@@ -1,4 +1,5 @@
 import datetime
+from rest_framework.permissions import AllowAny,IsAdminUser,IsAuthenticated
 from rest_framework.generics import ListAPIView,RetrieveAPIView,CreateAPIView,RetrieveUpdateAPIView,DestroyAPIView
 from flights import serializers
 from flights.models import Booking, Flight
@@ -24,7 +25,7 @@ class UserLoginAPIView(APIView):
 class FlightsList(ListAPIView):
     queryset = Flight.objects.all()
     serializer_class = serializers.FlightSerializer
-
+    permission_classes=[IsAuthenticated]
 
 class BookingsList(ListAPIView):
     serializer_class = serializers.BookingSerializer
